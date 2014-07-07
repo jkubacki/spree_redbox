@@ -3,13 +3,12 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_redbox'
   s.version     = '2.2.2'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.summary     = 'Spree extenstion for redbox'
   s.required_ruby_version = '>= 1.9.3'
 
-  # s.author    = 'You'
-  # s.email     = 'you@example.com'
-  # s.homepage  = 'http://www.spreecommerce.com'
+  s.author    = 'Jakub Kubacki'
+  s.email     = 'kubacki.jk@gmail.com'
+  s.homepage  = 'https://github.com/jkubacki'
 
   #s.files       = `git ls-files`.split("\n")
   #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
