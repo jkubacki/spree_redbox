@@ -2,7 +2,9 @@ class Redbox::Product < ActiveRecord::Base
   establish_connection 'redbox'
   self.table_name = 'shop_product'
 
-  after_initialize :decode_strings
+  # after_initialize :decode_strings
+  # before_save :encode_strings
+  # before_save :remove_arrays
 
   class << self
     def instance_method_already_implemented?(method_name)
@@ -43,14 +45,36 @@ class Redbox::Product < ActiveRecord::Base
   end
 
   private
+  def remove_arrays
+    self.name = remove_array self.name
+    self.name_storage = remove_array self.name_storage
+    self.name_invoice = remove_array self.name_invoice
+    self.keywords = remove_array self.keywords
+  end
+
+  def remove_array str
+    str = str.sub('pl:"["', 'pl:"')
+    str = str.sub('"]*";', '*";')
+    str
+  end
+
   def decode_strings
     decoder = Redbox::StringDecoder.new
-    self.description = decoder.decode(self.description)
+    # self.description = decoder.decode(self.description)
     self.name = decoder.decode(self.name)
     self.name_storage = decoder.decode(self.name_storage)
     self.name_invoice = decoder.decode(self.name_invoice)
     self.keywords = decoder.decode(self.keywords)
     # self. = decoder.decode(self.)
+  end
+
+  def encode_strings
+    decoder = Redbox::StringDecoder.new
+    # self.description = decoder.encode(self.description)
+    self.name = decoder.encode(self.name)
+    self.name_storage = decoder.encode(self.name_storage)
+    self.name_invoice = decoder.encode(self.name_invoice)
+    self.keywords = decoder.encode(self.keywords)
   end
 
 end
