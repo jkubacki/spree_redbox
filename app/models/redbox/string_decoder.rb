@@ -4,7 +4,7 @@ class Redbox::StringDecoder
   def decode(str)
     unless (str =~/pl:".*\*";/m).nil?
       captures = /pl:"(.*)\*";/m.match(str).captures
-      if captures.size > 0 then captures else str end
+      if captures.size > 0 then captures[0] else str end
     else
       str
     end

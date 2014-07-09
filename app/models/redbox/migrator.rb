@@ -1,6 +1,9 @@
 class Redbox::Migrator
 
   def migrate_product(redbox)
+    unless Spree::Variant.where(redbox_product_id: redbox.product_id).blank?
+      return  Spree::Variant.where(redbox_product_id: redbox.product_id).first.product
+    end
     # throw Exception.new('Product already migrated') unless redbox.combine_id.nil?
     product = create_product(redbox)
     puts product.valid?
