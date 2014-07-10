@@ -8,11 +8,7 @@ class Redbox::Migrate::Variant
     )
     variant.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: variant)
     redbox_product.combine_id = variant.id
-    if redbox_product.save
-      puts 'REDBOX SAVE'
-    else
-      puts 'REDBOX NOT SAVE'
-    end
+    redbox_product.save
     variant
   end
 
@@ -44,8 +40,6 @@ class Redbox::Migrate::Variant
           break
         end
       end
-      puts "FOUND?#{found}"
-      puts '-------------------------DESTROY-----------------------------' unless found
       variant.destroy unless found
     end
   end
