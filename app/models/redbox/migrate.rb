@@ -1,0 +1,2 @@
+module Redbox::Migrate
+end

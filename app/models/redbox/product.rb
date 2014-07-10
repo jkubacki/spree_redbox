@@ -4,7 +4,6 @@ class Redbox::Product < ActiveRecord::Base
 
   after_initialize :decode_strings
   before_save :encode_strings
-  # before_save :remove_arrays
 
   class << self
     def instance_method_already_implemented?(method_name)
@@ -19,7 +18,24 @@ class Redbox::Product < ActiveRecord::Base
   scope :sprzedawalnia, -> { where(producer_id: 99) }
   scope :dollar, -> { where(producer_id: 73, visible: 1) }
   scope :with_hash, -> { where("`symbol` LIKE '#%'") }
+  scope :with_variants, -> { where("`symbol` LIKE '#%\\^%'") }
+  scope :without_variants, -> { where("`symbol` NOT LIKE '#%\\^%'") }
   scope :visible, -> { where(visible: 1) }
+
+  def has_variants?
+    if self.symbol =~ /\^/ && self.symbol[0] == '#' then true else false end
+  end
+
+  def master_symbol
+    throw "Product has no variants." unless has_variants?
+    position = self.symbol =~ /\^/
+    return self.symbol[0..position]
+  end
+
+  def variants
+    throw "Product has no variants." unless has_variants?
+    Redbox::Product.where('`symbol` LIKE ?', master_symbol + '%').order(:symbol)
+  end
 
   def images_array
     images = []
@@ -44,19 +60,7 @@ class Redbox::Product < ActiveRecord::Base
     links
   end
 
-  # private
-  # def remove_arrays
-  #   self.name = remove_array self.name
-  #   self.name_storage = remove_array self.name_storage
-  #   self.name_invoice = remove_array self.name_invoice
-  #   self.keywords = remove_array self.keywords
-  # end
-  # def remove_array str
-  #   str = str.sub('pl:"["', 'pl:"')
-  #   str = str.sub('"]*";', '*";')
-  #   str
-  # end
-  #
+  private
   def decode_strings
     decoder = Redbox::StringDecoder.new
     self.description = decoder.decode(self.description)
