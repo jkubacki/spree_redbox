@@ -5,9 +5,6 @@ class Redbox::Migrate::Order
 
 
   def create_hash redbox_order
-    puts order_data.inspect
-    {
-        redbox_order_id: redbox_order.order_id
-    }
+    puts redbox_order.items
   end
 end
