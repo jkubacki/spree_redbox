@@ -26,7 +26,7 @@ class Redbox::Migrate::Variant
         end
         updated_variants << variant
       end
-      check_deleted_variants(product.variants, updated_variants)
+      # check_deleted_variants(product.variants, updated_variants)
     end
   end
 

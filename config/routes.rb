@@ -1,3 +1,9 @@
 Spree::Core::Engine.routes.draw do
-  # Add your extension routes here
+  namespace :api, :defaults => { :format => 'json' } do
+    resources :products do
+      member do
+        get :show_redbox
+      end
+    end
+  end
 end
