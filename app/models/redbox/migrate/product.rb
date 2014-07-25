@@ -9,17 +9,6 @@ class Redbox::Migrate::Product
   def migrate_product(redbox_product)
     if Spree::Variant.exists?(redbox_product_id: redbox_product.product_id)
       update_product redbox_product
-      # variant = Spree::Variant.find_by(redbox_product_id: redbox_product.product_id)
-      # change = false
-      # if redbox_product.name_storage != variant.name
-      #   variant.name = redbox_product.name_storage
-      #   change = true
-      # end
-      # if redbox_product.name_invoice != variant.invoice_name
-      #   variant.invoice_name = redbox_product.name_invoice
-      #   change = true
-      # end
-      # variant.save if change
     else
       create_product redbox_product
     end
