@@ -1,6 +1,6 @@
 class Redbox::Migrate::Product
 
-  PRODUCT_FIELDS_TO_UPDATE = {unit_id: :unit}
+  PRODUCT_FIELDS_TO_UPDATE = {unit_id: :unit, meta_keywords: :keywords}
 
   def initialize
     @migrate_variant = Redbox::Migrate::Variant.new

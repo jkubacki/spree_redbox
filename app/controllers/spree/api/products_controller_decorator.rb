@@ -1,8 +1,7 @@
 Spree::Api::ProductsController.class_eval do
-  def show_redbox
-    @product = find_product(params[:id])
-    expires_in 15.minutes, :public => true
-    headers['Surrogate-Control'] = "max-age=#{15.minutes}"
-    headers['Surrogate-Key'] = "product_id=1"
+  def update_redbox
+    redbox_product = Redbox::Product.find(params[:id])
+    migrator = Redbox::Migrate::Product.new
+    @product = migrator.migrate_product(redbox_product)
   end
 end
