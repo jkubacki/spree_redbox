@@ -1,5 +1,11 @@
 class Redbox::Migrate::RedboxProduct
-  PRODUCT_FIELDS_TO_UPDATE = {unit: 'product.unit_id', keywords: 'product.meta_keywords'}
+  PRODUCT_FIELDS_TO_UPDATE = {
+      unit: 'product.unit_id',
+      keywords: 'product.meta_keywords',
+      name_storage: :name,
+      symbol: :sku,
+      price_buy: :cost_price,
+  }
 
   def migrate_product(product)
     if product.has_variants?
