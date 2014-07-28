@@ -1,6 +1,34 @@
 class Redbox::Migrate::Product
+  include Redbox::Migrate
 
-  PRODUCT_FIELDS_TO_UPDATE = {unit_id: :unit, meta_keywords: :keywords}
+  PRODUCT_FIELDS = {
+      slug: :id,
+      meta_description: :description,
+      meta_keywords: :keywords,
+      tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat'],
+      shipping_category: '#Spree::ShippingCategory.first', # TODO
+      can_be_part: 'is_sub_multiproduct?',
+      individual_sale: 'is_main_multiproduct?',
+      unit_id: :unit,
+      # Master variant
+      sku: :symbol,
+      weight: :weight,
+      cost_price: :price_buy,
+      cost_currency: "#'PLN'",
+      active: :visible,
+      index: :index,
+      invoice_name: :name_invoice,
+      name: :name_storage,
+      description: :description,
+      redbox_product_id: :product_id
+  }
+
+  PRODUCT_FIELDS_CREATE = PRODUCT_FIELDS.merge({
+    price: '#Spree::Price.new'
+  })
+
+  PRODUCT_FIELDS_UPDATE = PRODUCT_FIELDS.merge({
+  })
 
   def initialize
     @migrate_variant = Redbox::Migrate::Variant.new
@@ -17,55 +45,36 @@ class Redbox::Migrate::Product
   private
   # Create product with master variant and check if product have variants (symbol with ^ dash)
   def create_product(redbox_product)
-    puts "Redbox: #{redbox_product.name} : #{redbox_product.symbol}"
     if redbox_product.has_variants?
-      product = Spree::Product.create(
-          {shipping_category: Spree::ShippingCategory.first}.merge create_hash(redbox_product, redbox_product.master_symbol)
-      )
+      if Spree::Variant.exists?(sku: redbox_product.master_symbol)
+        product = Spree::Variant.find_by(sku: redbox_product.master_symbol).product
+        @migrate_variant.create_variant(redbox_product, product)
+        return product
+      end
+      product = Spree::Product.new
+      update_fields(product, redbox_product, PRODUCT_FIELDS_CREATE)
+      product.sku = redbox_product.master_symbol
+      product.save
       products = redbox_product.variants
       products.each do |p|
         @migrate_variant.create_variant(p, product)
       end
     else
-      product = Spree::Product.create(
-          {shipping_category: Spree::ShippingCategory.first}.merge create_hash(redbox_product)
-      )
-      redbox_product.combine_id = product.master.id
-      redbox_product.save
+      product = Spree::Product.new
+      update_fields(product, redbox_product, PRODUCT_FIELDS_CREATE)
+      product.save
     end
-    puts "Combine: #{product.name} : #{product.sku}"
-    puts ''
     product.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: product.master)
-    return product
+    product
   end
 
   # Updates product from red-box
   def update_product(redbox_product)
     product = Spree::Variant.where(redbox_product_id: redbox_product.id).first.product
-    puts product.name
-    update_fields(product, redbox_product, PRODUCT_FIELDS_TO_UPDATE)
+    update_fields(product, redbox_product, PRODUCT_FIELDS_UPDATE)
     @migrate_variant.update_variants product, redbox_product
     product.save
     product
-  end
-
-  def create_hash(redbox_product, sku = nil)
-    if sku.blank?
-      sku = redbox_product.symbol
-    end
-    {redbox_product_id: redbox_product.product_id,
-     name: redbox_product.name_storage,
-     invoice_name: redbox_product.name_invoice,
-     price: Spree::Price.new,
-     slug: redbox_product.id,
-     sku: sku,
-     description: redbox_product.description}
-  end
-
-  def update_fields(subject, redbox_product, fields)
-    fields.each do |field, redbox_field|
-      eval "subject.#{field} = redbox_product.#{redbox_field}"
-    end
   end
 
 end

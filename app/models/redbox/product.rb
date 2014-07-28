@@ -22,6 +22,14 @@ class Redbox::Product < ActiveRecord::Base
   scope :without_variants, -> { where("`symbol` NOT LIKE '#%\\^%'") }
   scope :visible, -> { where(visible: 1) }
 
+  def is_main_multiproduct?
+    if Redbox::Multiproduct.exists?(symbol: self.symbol) then true else false end
+  end
+
+  def is_sub_multiproduct?
+    if Redbox::Multiproduct.where("multi LIKE '%#{self.symbol}=%'").count > 0 then true else false end
+  end
+
   def has_variants?
     if self.symbol =~ /\^/ && self.symbol[0] == '#' then true else false end
   end
