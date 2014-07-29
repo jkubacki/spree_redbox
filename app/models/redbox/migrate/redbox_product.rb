@@ -1,10 +1,20 @@
 class Redbox::Migrate::RedboxProduct
+  include Redbox::Migrate
   PRODUCT_FIELDS_TO_UPDATE = {
-      unit: 'product.unit_id',
+      # Product
       keywords: 'product.meta_keywords',
-      name_storage: :name,
+      vat: 'product.tax_rate.amount.to_f * 100',
+      unit: 'product.unit_id',
+      # Variant
       symbol: :sku,
-      price_buy: :cost_price,
+      weight: :weight,
+      price_buy: 'cost_price.to_f',
+      visible: :active,
+      index: :index,
+      name_invoice: :invoice_name,
+      name_storage: :name,
+      description: :description,
+      combine_id: :id
   }
 
   def migrate_product(product)
@@ -31,10 +41,4 @@ class Redbox::Migrate::RedboxProduct
     product
   end
 
-  private
-  def update_fields(subject, variant, fields)
-    fields.each do |field, variant_field|
-      eval "subject.#{field} = variant.#{variant_field}"
-    end
-  end
 end
