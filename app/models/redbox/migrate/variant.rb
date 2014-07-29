@@ -26,6 +26,7 @@ class Redbox::Migrate::Variant
     variant.product = product
     update_fields(variant, redbox_product, VARIANT_FIELDS_CREATE)
     variant.save
+    update_stock_item variant, redbox_product
     variant.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: variant)
     redbox_product.combine_id = variant.id
     redbox_product.save if Rails.env.production?
@@ -40,7 +41,7 @@ class Redbox::Migrate::Variant
           updated_variants << update_redbox_variant(product, redbox_variant)
         end
         puts updated_variants.inspect
-      check_deleted_variants(product.variants, updated_variants) # TODO
+      check_deleted_variants(product.variants, updated_variants)
     end
   end
 
@@ -57,6 +58,7 @@ class Redbox::Migrate::Variant
     elsif Spree::Variant.exists?(redbox_product_id: redbox_variant.product_id, is_master: false)
       variant = Spree::Variant.find_by(redbox_product_id: redbox_variant.product_id, is_master: false)
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE)
+      update_stock_item variant, redbox_variant
       variant.save
       variant.price = redbox_variant.price
       variant.save
@@ -64,6 +66,13 @@ class Redbox::Migrate::Variant
     else
       create_variant(redbox_variant, product) unless is_master
     end
+  end
+
+  def update_stock_item(variant, redbox_variant)
+    stock_item = Spree::StockItem.find_by(stock_location_id: 1, variant_id: variant.id)
+    stock_item.set_count_on_hand(redbox_variant.in_stock)
+    stock_item.backorderable = if redbox_variant.empty_message == 0 then true else false end
+    stock_item.save
   end
 
   def check_deleted_variants(variants, updated_variants)
@@ -75,7 +84,6 @@ class Redbox::Migrate::Variant
           break
         end
       end
-      puts "DESTROY #{variant.sku}" unless found
       variant.destroy unless found
     end
   end
