@@ -3,7 +3,7 @@ class Redbox::Migrate::Product
 
   PRODUCT_FIELDS = {
       slug: :id,
-      meta_description: :description,
+      # meta_description: :description,
       meta_keywords: :keywords,
       tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat'],
       shipping_category: '#Spree::ShippingCategory.first', # TODO
