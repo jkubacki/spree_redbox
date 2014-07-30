@@ -51,7 +51,6 @@ class Redbox::Migrate::Variant
       variant = product.master
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE)
       variant.sku = redbox_variant.master_symbol if product.has_variants?
-      variant.save
       variant.price = redbox_variant.price
       variant.save
       variant
