@@ -4,6 +4,7 @@ Spree::Api::ProductsController.class_eval do
     if redbox_product.nil?
       raise "Redbox product with id #{params[:id]} do not exists"
     end
+    puts redbox_product.inspect
     migrator = Redbox::Migrate::Product.new
     @product = migrator.migrate_product(redbox_product)
   end
