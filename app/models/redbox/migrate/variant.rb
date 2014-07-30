@@ -58,7 +58,6 @@ class Redbox::Migrate::Variant
       variant = Spree::Variant.find_by(redbox_product_id: redbox_variant.product_id, is_master: false)
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE)
       update_stock_item variant, redbox_variant
-      variant.save
       variant.price = redbox_variant.price
       variant.save
       variant
