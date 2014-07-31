@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name        = 'spree_redbox'
   s.version     = '2.2'
   s.summary     = 'Spree extenstion for redbox'
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 2.0.0'
 
   s.author    = 'Jakub Kubacki'
   s.email     = 'kubacki.jk@gmail.com'
