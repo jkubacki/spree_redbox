@@ -21,6 +21,10 @@ class Redbox::Migrate::Variant
   })
   VARIANT_FIELDS_UPDATE = VARIANT_FIELDS
 
+  def initialize
+    @migrate_image = Redbox::Migrate::Image.new
+  end
+
   def create_variant(redbox_product, product)
     variant = Spree::Variant.new
     variant.product = product
@@ -28,6 +32,7 @@ class Redbox::Migrate::Variant
     variant.save
     update_stock_item variant, redbox_product
     variant.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: variant)
+    @migrate_image.update_variant_images redbox_product, variant
     redbox_product.combine_id = variant.id
     redbox_product.save if Rails.env.production?
     variant
@@ -47,7 +52,7 @@ class Redbox::Migrate::Variant
 
   private
   def update_redbox_variant(product, redbox_variant, is_master = false)
-    if is_master
+    variant = if is_master
       variant = product.master
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE)
       variant.sku = redbox_variant.master_symbol if product.has_variants?
@@ -64,10 +69,15 @@ class Redbox::Migrate::Variant
     else
       create_variant(redbox_variant, product) unless is_master
     end
+    @migrate_image.update_variant_images redbox_variant, variant
+    variant
   end
 
   def update_stock_item(variant, redbox_variant)
     stock_item = Spree::StockItem.find_by(stock_location_id: 1, variant_id: variant.id)
+    if stock_item.blank?
+      stock_item = Spree::StockItem.create(stock_location_id: 1, variant: variant)
+    end
     stock_item.set_count_on_hand(redbox_variant.in_stock)
     stock_item.backorderable = if redbox_variant.empty_message == 0 then true else false end
     stock_item.save
