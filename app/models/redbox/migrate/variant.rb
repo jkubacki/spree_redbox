@@ -13,7 +13,8 @@ class Redbox::Migrate::Variant
       invoice_name: :name_invoice,
       name: :name_storage,
       description: :description,
-      redbox_product_id: :product_id
+      redbox_product_id: :product_id,
+      supplier_id: :producer_id
   }
 
   VARIANT_FIELDS_CREATE = VARIANT_FIELDS.merge({
