@@ -49,8 +49,12 @@ class Redbox::Migrate::Product
     else
       redbox_products = Redbox::Product.all
     end
-    redbox_products.each do |redbox_product|
+    count = redbox_products.count
+    redbox_products.each.with_index(1) do |redbox_product, i|
       migrate_product redbox_product
+      puts '------------------------------------------------------'
+      puts "MIGRATED #{i}/#{count} (#{redbox_product.product_id} - #{redbox_product.name_storage})"
+      puts '------------------------------------------------------'
     end
   end
 
