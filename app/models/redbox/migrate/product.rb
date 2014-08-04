@@ -32,6 +32,7 @@ class Redbox::Migrate::Product
 
   def initialize
     @migrate_variant = Redbox::Migrate::Variant.new
+    @migrate_image = Redbox::Migrate::Image.new
   end
 
   def migrate_product(redbox_product)
@@ -39,6 +40,17 @@ class Redbox::Migrate::Product
       update_product redbox_product
     else
       create_product redbox_product
+    end
+  end
+
+  def migrate_all_products(only_with_hash = true)
+    if only_with_hash
+      redbox_products = Redbox::Product.with_hash
+    else
+      redbox_products = Redbox::Product.all
+    end
+    redbox_products.each do |redbox_product|
+      migrate_product redbox_product
     end
   end
 
@@ -65,6 +77,7 @@ class Redbox::Migrate::Product
       product.save
     end
     product.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: product.master)
+    @migrate_image.update_variant_images redbox_product, product.master
     product
   end
 

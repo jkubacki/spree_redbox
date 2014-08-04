@@ -4,7 +4,14 @@ class Redbox::Migrate::Image
   def update_variant_images(redbox_product, variant)
     require 'php_serialize'
     images_serialized = redbox_product.image
-    images_unserialized = PHP.unserialize(images_serialized)
+    return if images_serialized.blank?
+    begin
+      images_unserialized = PHP.unserialize(images_serialized)
+    rescue Exception => e
+      puts "Image unserialize exception #{e.message}. Variant #{variant.id}, sku: #{variant.sku}."
+      raise e
+    end
+
     redbox_images = []
     images_unserialized.each do |image_serialized|
       filename = "#{image_serialized['name']}.jpg"
