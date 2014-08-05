@@ -18,7 +18,7 @@ class Redbox::Migrate::Image
       redbox_images << filename
       add_image_to_variant(variant, filename)
     end
-    check_deleted_variant_images(variant, redbox_images)
+    # check_deleted_variant_images(variant, redbox_images)
   end
 
   private
