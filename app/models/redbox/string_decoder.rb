@@ -15,9 +15,6 @@ class Redbox::StringDecoder
     unless (str =~/pl:".*\*";/m).nil?
       return str
     end
-    if str.last == '*'
-      str = str[0..-2]
-    end
     "pl:\"#{str}*\";"
   end
 
