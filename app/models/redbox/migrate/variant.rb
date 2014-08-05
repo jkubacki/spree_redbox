@@ -30,6 +30,7 @@ class Redbox::Migrate::Variant
     variant = Spree::Variant.new
     variant.product = product
     update_fields(variant, redbox_product, VARIANT_FIELDS_CREATE)
+    return nil unless variant.valid?
     variant.save
     update_stock_item variant, redbox_product
     variant.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: variant)

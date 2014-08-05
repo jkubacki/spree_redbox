@@ -70,6 +70,7 @@ class Redbox::Migrate::Product
       product = Spree::Product.new
       update_fields(product, redbox_product, PRODUCT_FIELDS_CREATE)
       product.sku = redbox_product.master_symbol
+      return nil unless product.valid?
       product.save
       products = redbox_product.variants
       products.each do |p|
