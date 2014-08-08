@@ -99,7 +99,9 @@ class Redbox::Migrate::Product
 
   def product_created_at(product)
     created_at = product.master.created_at
+    return Time.now if created_at.blank?
     product.variants.each do |variant|
+      next if variant.created_at.blank?
       created_at = variant.created_at if variant.created_at > created_at
     end
     created_at
