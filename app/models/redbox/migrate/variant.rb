@@ -7,7 +7,6 @@ class Redbox::Migrate::Variant
       cost_price: :price_buy,
       cost_currency: "#'PLN'",
       track_inventory: '#true',
-      tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat'],
       active: :visible,
       index: :index,
       invoice_name: :name_invoice,
@@ -29,7 +28,7 @@ class Redbox::Migrate::Variant
   def create_variant(redbox_product, product)
     variant = Spree::Variant.new
     variant.product = product
-    update_fields(variant, redbox_product, VARIANT_FIELDS_CREATE)
+    update_fields(variant, redbox_product, VARIANT_FIELDS_CREATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
     return nil unless variant.valid?
     variant.save
     update_stock_item variant, redbox_product
@@ -56,14 +55,14 @@ class Redbox::Migrate::Variant
   def update_redbox_variant(product, redbox_variant, is_master = false)
     variant = if is_master
       variant = product.master
-      update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE)
+      update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       variant.sku = redbox_variant.master_symbol if product.has_variants?
       variant.price = redbox_variant.price
       variant.save
       variant
     elsif Spree::Variant.exists?(redbox_product_id: redbox_variant.product_id, is_master: false)
       variant = Spree::Variant.find_by(redbox_product_id: redbox_variant.product_id, is_master: false)
-      update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE)
+      update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       update_stock_item variant, redbox_variant
       variant.price = redbox_variant.price
       variant.save

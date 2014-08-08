@@ -14,7 +14,8 @@ class Redbox::Migrate::RedboxProduct
       name_invoice: :invoice_name,
       name_storage: :name,
       description: :description,
-      combine_id: :id
+      combine_id: :id,
+      added: 'created_at.to_i'
   }
 
   def migrate_product(product)
