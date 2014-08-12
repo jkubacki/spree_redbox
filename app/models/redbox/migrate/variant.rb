@@ -31,6 +31,7 @@ class Redbox::Migrate::Variant
     update_fields(variant, redbox_product, VARIANT_FIELDS_CREATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
     return nil unless variant.valid?
     variant.save
+    update_store_variants variant, redbox_product
     update_stock_item variant, redbox_product
     variant.price = Spree::Price.create(amount: redbox_product.price_brutto, currency: 'PLN', variant: variant)
     @migrate_image.update_variant_images redbox_product, variant
@@ -46,7 +47,6 @@ class Redbox::Migrate::Variant
         redbox_product.variants.each do |redbox_variant|
           updated_variants << update_redbox_variant(product, redbox_variant)
         end
-        puts updated_variants.inspect
       check_deleted_variants(product.variants, updated_variants)
     end
   end
@@ -61,6 +61,25 @@ class Redbox::Migrate::Variant
     stock_item.save
   end
 
+  def update_store_variants(variant, redbox_variant)
+    variant.store_variants.each do |store_variant|
+      if store_variant.store.code == 'red'
+        store_variant.name = redbox_variant.name
+        store_variant.price = redbox_variant.price_brutto
+      elsif store_variant.store.code == 'kos'
+        store_variant.name = redbox_variant.name_istore
+        store_variant.price = redbox_variant.price_istore
+      elsif store_variant.store.code == 'ts'
+        store_variant.name = redbox_variant.name_eprice
+        store_variant.price = redbox_variant.price_eprice
+      elsif store_variant.store.code == 't24'
+        store_variant.name = redbox_variant.name
+        store_variant.price = redbox_variant.price_t24
+      end
+      store_variant.save
+    end
+  end
+
   private
   def update_redbox_variant(product, redbox_variant, is_master = false)
     variant = if is_master
@@ -70,6 +89,7 @@ class Redbox::Migrate::Variant
       update_stock_item variant, redbox_variant
       variant.price = redbox_variant.price_brutto
       variant.save
+      update_store_variants variant, redbox_variant
       variant
     elsif Spree::Variant.exists?(redbox_product_id: redbox_variant.product_id, is_master: false)
       variant = Spree::Variant.find_by(redbox_product_id: redbox_variant.product_id, is_master: false)
@@ -77,6 +97,7 @@ class Redbox::Migrate::Variant
       update_stock_item variant, redbox_variant
       variant.price = redbox_variant.price_brutto
       variant.save
+      update_store_variants variant, redbox_variant
       variant
     else
       create_variant(redbox_variant, product) unless is_master

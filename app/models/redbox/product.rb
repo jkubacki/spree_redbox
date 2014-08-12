@@ -79,6 +79,10 @@ class Redbox::Product < ActiveRecord::Base
     self.name = decoder.decode(self.name)
     self.name_storage = decoder.decode(self.name_storage)
     self.name_invoice = decoder.decode(self.name_invoice)
+    self.name_istore = decoder.decode(self.name_istore) # kostiumowo
+    self.name_eprice = decoder.decode(self.name_eprice) # eprice
+    self.name_eprice2 = decoder.decode(self.name_eprice2) # eprice
+    self.name_eprice3 = decoder.decode(self.name_eprice3) # eprice
     self.keywords = decoder.decode(self.keywords)
   end
 
@@ -88,6 +92,10 @@ class Redbox::Product < ActiveRecord::Base
     self.name = decoder.encode(self.name)
     self.name_storage = decoder.encode(self.name_storage)
     self.name_invoice = decoder.encode(self.name_invoice)
+    self.name_istore = decoder.encode(self.name_istore) # kostiumowo
+    self.name_eprice = decoder.encode(self.name_eprice) # eprice
+    self.name_eprice2 = decoder.encode(self.name_eprice2) # eprice
+    self.name_eprice3 = decoder.encode(self.name_eprice3) # eprice
     self.keywords = decoder.encode(self.keywords)
   end
 end

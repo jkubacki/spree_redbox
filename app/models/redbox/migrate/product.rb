@@ -87,6 +87,7 @@ class Redbox::Migrate::Product
     end
     product.price = Spree::Price.create(amount: redbox_product.price_brutto, currency: 'PLN', variant: product.master)
     @migrate_image.update_variant_images redbox_product, product.master
+    @migrate_variant.update_store_variants product.master, redbox_product
     product
   end
 
