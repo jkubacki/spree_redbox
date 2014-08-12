@@ -63,10 +63,12 @@ class Redbox::Migrate::Product
     if redbox_product.has_variants?
       if Spree::Variant.exists?(sku: redbox_product.master_symbol)
         product = Spree::Variant.find_by(sku: redbox_product.master_symbol).product
+        set_stores product, redbox_product
         @migrate_variant.create_variant(redbox_product, product)
         return product
       end
       product = Spree::Product.new
+      set_stores product, redbox_product
       update_fields(product, redbox_product, PRODUCT_FIELDS_CREATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       product.sku = redbox_product.master_symbol
       return nil unless product.valid?
@@ -91,6 +93,7 @@ class Redbox::Migrate::Product
   # Updates product from red-box
   def update_product(redbox_product)
     product = Spree::Variant.where(redbox_product_id: redbox_product.id).first.product
+    set_stores product, redbox_product
     update_fields(product, redbox_product, PRODUCT_FIELDS_UPDATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
     @migrate_variant.update_variants product, redbox_product
     product.created_at = product_created_at product
@@ -106,6 +109,15 @@ class Redbox::Migrate::Product
       created_at = variant.created_at if variant.created_at > created_at
     end
     created_at
+  end
+
+  def set_stores(product, redbox_product)
+    stores = []
+    stores << Spree::Store.find_by(code: 'red')
+    stores << Spree::Store.find_by(code: 'ts') if redbox_product.symbol[0] == '#'
+    stores << Spree::Store.find_by(code: 't24') if redbox_product.producer_id == 99
+    stores << Spree::Store.find_by(code: 'kos') if redbox_product.istore
+    product.stores = stores
   end
 
 end
