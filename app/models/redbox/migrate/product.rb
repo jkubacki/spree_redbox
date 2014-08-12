@@ -83,7 +83,7 @@ class Redbox::Migrate::Product
       product.save
       @migrate_variant.update_stock_item product.master, redbox_product
     end
-    product.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: product.master)
+    product.price = Spree::Price.create(amount: redbox_product.price_brutto, currency: 'PLN', variant: product.master)
     @migrate_image.update_variant_images redbox_product, product.master
     product
   end

@@ -32,7 +32,7 @@ class Redbox::Migrate::Variant
     return nil unless variant.valid?
     variant.save
     update_stock_item variant, redbox_product
-    variant.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: variant)
+    variant.price = Spree::Price.create(amount: redbox_product.price_brutto, currency: 'PLN', variant: variant)
     @migrate_image.update_variant_images redbox_product, variant
     redbox_product.combine_id = variant.id
     redbox_product.save if Rails.env.production?
@@ -68,14 +68,14 @@ class Redbox::Migrate::Variant
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       variant.sku = redbox_variant.master_symbol if product.has_variants?
       update_stock_item variant, redbox_variant
-      variant.price = redbox_variant.price
+      variant.price = redbox_variant.price_brutto
       variant.save
       variant
     elsif Spree::Variant.exists?(redbox_product_id: redbox_variant.product_id, is_master: false)
       variant = Spree::Variant.find_by(redbox_product_id: redbox_variant.product_id, is_master: false)
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       update_stock_item variant, redbox_variant
-      variant.price = redbox_variant.price
+      variant.price = redbox_variant.price_brutto
       variant.save
       variant
     else

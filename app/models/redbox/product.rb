@@ -68,6 +68,10 @@ class Redbox::Product < ActiveRecord::Base
     links
   end
 
+  def price_brutto
+    ((price * (vat.to_f/100 + 1))*100).round / 100.0
+  end
+
   private
   def decode_strings
     decoder = Redbox::StringDecoder.new
