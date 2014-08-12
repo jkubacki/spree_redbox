@@ -51,12 +51,23 @@ class Redbox::Migrate::Variant
     end
   end
 
+  def update_stock_item(variant, redbox_variant)
+    stock_item = Spree::StockItem.find_by(stock_location_id: 1, variant_id: variant.id)
+    if stock_item.blank?
+      stock_item = Spree::StockItem.create(stock_location_id: 1, variant: variant)
+    end
+    stock_item.set_count_on_hand(redbox_variant.in_stock)
+    stock_item.backorderable = if redbox_variant.empty_message == 0 then true else false end
+    stock_item.save
+  end
+
   private
   def update_redbox_variant(product, redbox_variant, is_master = false)
     variant = if is_master
       variant = product.master
       update_fields(variant, redbox_variant, VARIANT_FIELDS_UPDATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       variant.sku = redbox_variant.master_symbol if product.has_variants?
+      update_stock_item variant, redbox_variant
       variant.price = redbox_variant.price
       variant.save
       variant
@@ -72,16 +83,6 @@ class Redbox::Migrate::Variant
     end
     @migrate_image.update_variant_images redbox_variant, variant
     variant
-  end
-
-  def update_stock_item(variant, redbox_variant)
-    stock_item = Spree::StockItem.find_by(stock_location_id: 1, variant_id: variant.id)
-    if stock_item.blank?
-      stock_item = Spree::StockItem.create(stock_location_id: 1, variant: variant)
-    end
-    stock_item.set_count_on_hand(redbox_variant.in_stock)
-    stock_item.backorderable = if redbox_variant.empty_message == 0 then true else false end
-    stock_item.save
   end
 
   def check_deleted_variants(variants, updated_variants)

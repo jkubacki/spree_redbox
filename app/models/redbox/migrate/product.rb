@@ -81,6 +81,7 @@ class Redbox::Migrate::Product
       update_fields(product, redbox_product, PRODUCT_FIELDS_CREATE.merge(created_at: ['Time.at(@1)', 'added'], tax_category: ['Spree::TaxRate.rate@1.tax_category', 'vat']))
       product.created_at = product_created_at product
       product.save
+      @migrate_variant.update_stock_item product.master, redbox_product
     end
     product.price = Spree::Price.create(amount: redbox_product.price, currency: 'PLN', variant: product.master)
     @migrate_image.update_variant_images redbox_product, product.master
