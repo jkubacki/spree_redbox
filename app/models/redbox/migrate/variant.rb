@@ -56,7 +56,7 @@ class Redbox::Migrate::Variant
     if stock_item.blank?
       stock_item = Spree::StockItem.create(stock_location_id: 1, variant: variant)
     end
-    stock_item.set_count_on_hand(redbox_variant.in_stock)
+    stock_item.set_count_on_hand(if redbox_variant.in_stock > 0 then redbox_variant.in_stock else 0 end)
     stock_item.backorderable = if redbox_variant.empty_message == 0 then true else false end
     stock_item.save
   end
