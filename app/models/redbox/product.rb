@@ -72,6 +72,10 @@ class Redbox::Product < ActiveRecord::Base
     ((price * (vat.to_f/100 + 1))*100).round / 100.0
   end
 
+  def on_hand
+    in_stock - in_queue
+  end
+
   private
   def decode_strings
     decoder = Redbox::StringDecoder.new
