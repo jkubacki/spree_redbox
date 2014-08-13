@@ -37,7 +37,7 @@ class Redbox::Product < ActiveRecord::Base
   def master_symbol
     throw "Product has no variants." unless has_variants?
     position = self.symbol =~ /\^/
-    return self.symbol[0..position]
+    return self.symbol[0..position-1]
   end
 
   def variants
