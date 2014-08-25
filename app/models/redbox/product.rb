@@ -1,7 +1,7 @@
 class Redbox::Product < ActiveRecord::Base
   establish_connection 'redbox'
   self.table_name = 'shop_product'
-
+scope :sprzedawalnia, -> { where(producer_id: 99) }
   after_initialize :decode_strings
   before_save :encode_strings
 
