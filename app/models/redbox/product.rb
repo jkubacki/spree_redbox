@@ -1,9 +1,15 @@
 class Redbox::Product < ActiveRecord::Base
   establish_connection 'redbox'
   self.table_name = 'shop_product'
-scope :sprzedawalnia, -> { where(producer_id: 99) }
+
+  has_and_belongs_to_many :ocassions
+  has_and_belongs_to_many :colors
+  has_and_belongs_to_many :styles
+
   after_initialize :decode_strings
   before_save :encode_strings
+
+  scope :sprzedawalnia, -> { where(producer_id: 99) }
 
   class << self
     def instance_method_already_implemented?(method_name)
