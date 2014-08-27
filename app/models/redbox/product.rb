@@ -6,10 +6,17 @@ class Redbox::Product < ActiveRecord::Base
   has_and_belongs_to_many :colors
   has_and_belongs_to_many :styles
 
-  after_initialize :decode_strings
-  before_save :encode_strings
+  ENCODE_FIELDS = %w{description name name_storage name_invoice name_istore name_eprice name_eprice2 name_eprice3 keywords}
+  DECODER = Redbox::StringDecoder.new
 
-  scope :sprzedawalnia, -> { where(producer_id: 99) }
+  ENCODE_FIELDS.each do |method|
+    define_method(method) do |*args|
+      DECODER.decode(super *args)
+    end
+    define_method(method + '=') do |*args|
+      super DECODER.encode args[0]
+    end
+  end
 
   class << self
     def instance_method_already_implemented?(method_name)
@@ -56,19 +63,20 @@ class Redbox::Product < ActiveRecord::Base
     if self.image.blank?
       return images
     end
+    require 'php_serialize'
     PHP.unserialize(self.image).each do |img|
       images << img['name']
     end
     images
   end
 
-  def images_links (admin = 't24')
+  def images_links (admin = 't24', size = 0)
     links = []
     images_array.each do |img|
       if admin.blank?
         links << "http://www.red-box.pl/sklep/1/0_#{img}.jpg"
       else
-        links << "http://red-box.pl/sklep/w.php?name=http://www.red-box.pl/sklep/1/0_#{img}.jpg&admin=#{admin}"
+        links << "http://red-box.pl/sklep/w.php?name=http://www.red-box.pl/sklep/1/#{size}_#{img}.jpg&admin=#{admin}"
       end
     end
     links
@@ -82,30 +90,8 @@ class Redbox::Product < ActiveRecord::Base
     in_stock - in_queue
   end
 
-  private
-  def decode_strings
-    decoder = Redbox::StringDecoder.new
-    self.description = decoder.decode(self.description)
-    self.name = decoder.decode(self.name)
-    self.name_storage = decoder.decode(self.name_storage)
-    self.name_invoice = decoder.decode(self.name_invoice)
-    self.name_istore = decoder.decode(self.name_istore) # kostiumowo
-    self.name_eprice = decoder.decode(self.name_eprice) # eprice
-    self.name_eprice2 = decoder.decode(self.name_eprice2) # eprice
-    self.name_eprice3 = decoder.decode(self.name_eprice3) # eprice
-    self.keywords = decoder.decode(self.keywords)
-  end
+  def self.select(*args)
+    super()
 
-  def encode_strings
-    decoder = Redbox::StringDecoder.new
-    self.description = decoder.encode(self.description)
-    self.name = decoder.encode(self.name)
-    self.name_storage = decoder.encode(self.name_storage)
-    self.name_invoice = decoder.encode(self.name_invoice)
-    self.name_istore = decoder.encode(self.name_istore) # kostiumowo
-    self.name_eprice = decoder.encode(self.name_eprice) # eprice
-    self.name_eprice2 = decoder.encode(self.name_eprice2) # eprice
-    self.name_eprice3 = decoder.encode(self.name_eprice3) # eprice
-    self.keywords = decoder.encode(self.keywords)
   end
 end

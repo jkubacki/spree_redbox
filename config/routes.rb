@@ -6,4 +6,11 @@ Spree::Core::Engine.routes.draw do
       end
     end
   end
+  namespace :admin do
+    resources :redbox_products do
+      collection do
+        put :update_multiple
+      end
+    end
+  end
 end

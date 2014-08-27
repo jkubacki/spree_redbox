@@ -1,0 +1,33 @@
+<table>
+  <tr>
+    <th>Zdjęcie</th>
+    <th>Symbol</th>
+    <th>Nazwa</th>
+    <th>Wysyłka</th>
+    <th>Cechy</th>
+  </tr>
+  <%= form_tag update_multiple_admin_redbox_products_path, method: :put do %>
+      <% @products.each do |product| %>
+          <%= fields_for "products[]", product do |f| %>
+              <tr>
+                <td>
+                  <a href="<%= product.images_links('redbox', 0)[0] %>" target="_blank"><%= image_tag(product.images_links('redbox', 1)[0]) %></a>
+                </td>
+                <td>
+                  <%= product.symbol %>
+                </td>
+                <td>
+                  <a href="http://www.red-box.pl/shop,show,<%= product.product_id %>" target="_blank"><%= product.name_storage %></a>
+                </td>
+                <td>
+                    <%= f.check_box :only_courier %> <%= f.label :only_courier, Spree.t(:only_courier) %> <br />
+                    <%= f.check_box :light_package %> <%= f.label :light_package, Spree.t(:light_package) %>
+                </td>
+                <td>
+
+                </td>
+              </tr>
+          <% end %>
+      <% end %>
+  <% end %>
+</table>
