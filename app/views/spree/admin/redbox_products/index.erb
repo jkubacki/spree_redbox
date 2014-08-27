@@ -1,14 +1,15 @@
 <table>
   <tr>
-    <th>Zdjęcie</th>
-    <th>Symbol</th>
-    <th>Nazwa</th>
-    <th>Wysyłka</th>
-    <th>Cechy</th>
+    <th><%= Spree.t(:image) %></th>
+    <th><%= Spree.t(:sku) %></th>
+    <th><%= Spree.t(:name) %></th>
+    <th><%= Spree.t(:delivery) %></th>
+    <th><%= Spree.t(:attributes) %></th>
   </tr>
   <%= form_tag update_multiple_admin_redbox_products_path, method: :put do %>
       <% @products.each do |product| %>
           <%= fields_for "products[]", product do |f| %>
+              <span style="position: fixed; bottom: 0; left: 40%;"><%= f.submit Spree.t(:update) %></span>
               <tr>
                 <td>
                   <a href="<%= product.images_links('redbox', 0)[0] %>" target="_blank"><%= image_tag(product.images_links('redbox', 1)[0]) %></a>
