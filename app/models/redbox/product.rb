@@ -9,14 +9,14 @@ class Redbox::Product < ActiveRecord::Base
   ENCODE_FIELDS = %w{description name name_storage name_invoice name_istore name_eprice name_eprice2 name_eprice3 keywords}
   DECODER = Redbox::StringDecoder.new
 
-  # ENCODE_FIELDS.each do |method|
-  #   define_method(method) do |*args|
-  #     DECODER.decode(super *args)
-  #   end
-  #   define_method(method + '=') do |*args|
-  #     super DECODER.encode args[0]
-  #   end
-  # end
+  ENCODE_FIELDS.each do |method|
+    define_method(method) do |*args|
+      DECODER.decode(super *args)
+    end
+    define_method(method + '=') do |*args|
+      super DECODER.encode args[0]
+    end
+  end
 
   class << self
     def instance_method_already_implemented?(method_name)
