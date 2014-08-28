@@ -3,8 +3,8 @@ module Spree
     class RedboxProductsController < Spree::Admin::BaseController
 
       def index
+        get_data
         @products = Redbox::Product.with_hash.limit(2).includes(:colors, :ocassions, :styles, :genders, :sizes).select(:product_id, :name_storage, :image, :symbol, :only_courier, :light_package)
-        @colors = Redbox::Color
       end
 
       def update_multiple
@@ -18,6 +18,14 @@ module Spree
 
       def person_params
         params[:products].permit!
+      end
+
+      def get_data
+        @colors = Redbox::Color.order('name ASC')
+        @ocassions = Redbox::Ocassion.order('name ASC')
+        @styles = Redbox::Style.order('name ASC')
+        @genders = Redbox::Gender.order('name ASC')
+        @sizes = Redbox::Size.order('name ASC')
       end
 
     end

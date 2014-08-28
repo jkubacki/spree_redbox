@@ -25,11 +25,11 @@
                     <%= f.check_box :light_package %> <%= f.label :light_package, Spree.t(:light_package) %>
                 </td>
                 <td>
-                  <%= f.association :colors %>
-                  <%= f.association :ocassions %>
-                  <%= f.association :styles %>
-                  <%= f.association :sizes %>
-                  <%= f.association :genders %>
+                  <%= f.association :colors, collection: @colors, label: Spree.t(:colors), input_html: { class: 'select2', style: 'width: 370px; text-align: right;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :ocassions, collection: @ocassions, label: Spree.t(:ocassions), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :styles, collection: @styles, label: Spree.t(:styles), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :sizes, collection: @sizes, label: Spree.t(:sizes), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :genders, collection: @genders, label: Spree.t(:genders), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
                 </td>
               </tr>
           <% end %>
