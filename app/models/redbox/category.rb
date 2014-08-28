@@ -48,10 +48,8 @@ class Redbox::Category < ActiveRecord::Base
   end
 
   def self.all_names(start_node = new)
-    names = []
-    start_node.children(true).each do |category|
-      names << {category.id => category.full_path}
-    end
+    names = {}
+    start_node.children(true).each { |category| names[category.id] = category.full_path }
     names
   end
 

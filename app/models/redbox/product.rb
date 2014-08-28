@@ -38,6 +38,10 @@ class Redbox::Product < ActiveRecord::Base
   scope :without_variants, -> { where("`symbol` NOT LIKE '#%\\^%'") }
   scope :visible, -> { where(visible: 1) }
 
+  def self.within_category(id)
+    where("category_id LIKE :id OR category_id2 LIKE :id OR category_id3 LIKE :id", {id: id.to_s + '%'})
+  end
+
   def is_main_multiproduct?
     if Redbox::Multiproduct.exists?(symbol: self.symbol) then true else false end
   end
