@@ -6,9 +6,9 @@
     <th><%= Spree.t(:delivery) %></th>
     <th><%= Spree.t(:attributes) %></th>
   </tr>
-  <%= form_tag update_multiple_admin_redbox_products_path, method: :put do %>
+  <%= simple_form_for update_multiple_admin_redbox_products_path, method: :put, :url => url_for(action: 'update_multiple', controller: 'redbox_products') do %>
       <% @products.each do |product| %>
-          <%= fields_for "products[]", product do |f| %>
+          <%= simple_fields_for "products[]", product do |f| %>
               <span style="position: fixed; bottom: 0; left: 40%;"><%= f.submit Spree.t(:update) %></span>
               <tr>
                 <td>
@@ -25,7 +25,11 @@
                     <%= f.check_box :light_package %> <%= f.label :light_package, Spree.t(:light_package) %>
                 </td>
                 <td>
-
+                  <%= f.association :colors %>
+                  <%= f.association :ocassions %>
+                  <%= f.association :styles %>
+                  <%= f.association :sizes %>
+                  <%= f.association :genders %>
                 </td>
               </tr>
           <% end %>

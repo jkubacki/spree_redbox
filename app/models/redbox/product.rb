@@ -2,10 +2,13 @@ class Redbox::Product < ActiveRecord::Base
   establish_connection 'redbox'
   self.table_name = 'shop_product'
 
-  has_and_belongs_to_many :ocassions
-  has_and_belongs_to_many :colors
-  has_and_belongs_to_many :styles
+  has_and_belongs_to_many :ocassions, class_name: 'Redbox::Ocassion'
+  has_and_belongs_to_many :colors, class_name: 'Redbox::Color'
+  has_and_belongs_to_many :styles, class_name: 'Redbox::Style'
+  has_and_belongs_to_many :sizes, class_name: 'Redbox::Size'
+  has_and_belongs_to_many :genders, class_name: 'Redbox::Gender'
 
+  # accepts_nested_attributes_for :colors
   ENCODE_FIELDS = %w{description name name_storage name_invoice name_istore name_eprice name_eprice2 name_eprice3 keywords}
   DECODER = Redbox::StringDecoder.new
 
