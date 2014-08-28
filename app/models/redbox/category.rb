@@ -6,16 +6,8 @@ class Redbox::Category < ActiveRecord::Base
 
   scope :roots, -> { where("category_id LIKE '___'") }
 
-  def self.category_tree(start_node = new, categories = [])
-    start_node.children.each do |child|
-      tree = category_tree(child)
-      unless tree.empty?
-        categories << { child => category_tree(child) }
-      else
-        categories << child.id
-      end
-    end
-    categories
+  def full_path
+    if parent then parent.full_path + ' > ' + name else name end
   end
 
   def is_root?
@@ -41,6 +33,26 @@ class Redbox::Category < ActiveRecord::Base
     else
       Redbox::Category.where("category_id LIKE '#{id}___'")
     end
+  end
+
+  def self.category_tree(start_node = new, categories = [])
+    start_node.children.each do |child|
+      tree = category_tree(child)
+      unless tree.empty?
+        categories << { child => category_tree(child) }
+      else
+        categories << child.id
+      end
+    end
+    categories
+  end
+
+  def self.all_names(start_node = new)
+    names = []
+    start_node.children(true).each do |category|
+      names << {category.id => category.full_path}
+    end
+    names
   end
 
   private
