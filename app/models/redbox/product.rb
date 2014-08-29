@@ -20,7 +20,6 @@ class Redbox::Product < ActiveRecord::Base
       super DECODER.encode args[0]
     end
   end
-
   class << self
     def instance_method_already_implemented?(method_name)
       return true if method_name =~ /^attributes/

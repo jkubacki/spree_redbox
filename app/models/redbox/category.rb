@@ -6,12 +6,16 @@ class Redbox::Category < ActiveRecord::Base
 
   scope :roots, -> { where("category_id LIKE '___'") }
 
+  def products
+    Redbox::CategoryTool.new.products self
+  end
+
   def full_path
     if parent then parent.full_path + ' > ' + name else name end
   end
 
   def is_root?
-    if categories.size == 1
+    if number_chunks.size == 1
       true
     else
       false
@@ -53,6 +57,10 @@ class Redbox::Category < ActiveRecord::Base
     names
   end
 
+  def number_chunks
+    id.to_s.scan /.{1,3}/
+  end
+
   private
   def decode_strings
     decoder = Redbox::StringDecoder.new
@@ -62,10 +70,6 @@ class Redbox::Category < ActiveRecord::Base
   def encode_strings
     decoder = Redbox::StringDecoder.new
     self.name = decoder.encode(self.name)
-  end
-
-  def categories
-    id.to_s.scan /.{1,5}/
   end
 
   def parent_number
