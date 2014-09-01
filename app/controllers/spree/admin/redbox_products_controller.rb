@@ -5,7 +5,12 @@ module Spree
       def index
         get_data
         @category_id = form_params[:id]
-        @products = Redbox::Product.within_category(@category_id).with_hash.page(params[:page]).per(10).includes(:colors, :ocassions, :styles, :genders, :sizes).select(:product_id, :name_storage, :image, :symbol, :only_courier, :light_package, :visible).order(visible: :desc, symbol: :asc)
+        @products = Redbox::Product
+          .within_category(@category_id)
+          .with_hash.page(params[:page])
+          .per(10).includes(:colors, :ocassions, :styles, :genders, :sizes)
+          .select(:product_id, :name_storage, :image, :symbol, :only_courier, :light_package, :visible)
+          .order(visible: :desc, symbol: :asc)
         @page = params[:page] || 1
       end
 
