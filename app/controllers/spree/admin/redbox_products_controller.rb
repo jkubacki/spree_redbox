@@ -39,8 +39,8 @@ module Spree
       def get_data
         @colors = Redbox::Color.order('name ASC')
         @ocassions = Redbox::Ocassion.all
-        @styles = Redbox::Style.order('name ASC')
-        @genders = Redbox::Gender.order('name ASC')
+        @styles = Redbox::Style.all
+        @genders = Redbox::Gender.all
         @sizes = Redbox::Size.all
         @categories = Rails.cache.fetch(:get_categories) { get_categories }
       end
