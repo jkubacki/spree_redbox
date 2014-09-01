@@ -17,7 +17,7 @@
       <% @products.each do |product| %>
           <%= simple_fields_for "products[]", product do |f| %>
               <span style="position: fixed; bottom: 0; left: 40%;"><%= f.submit Spree.t(:update) %></span>
-              <tr>
+              <tr <% unless product.visible == 1 %>style="background-color: #d3d3d3;"<% end %>>
                 <td>
                   <a href="<%= product.images_links('redbox', 0)[0] %>" target="_blank"><%= image_tag(product.images_links('redbox', 2)[0]) %></a>
                 </td>
