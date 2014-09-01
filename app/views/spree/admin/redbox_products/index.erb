@@ -1,37 +1,40 @@
+<%= simple_form_for :category, method: :get, url: url_for(action: 'index', controller: 'redbox_products') do |f| %>
+    <%= f.input :id, collection: @categories.map {|k,v| [v,k]}, selected: @category_id, include_blank: Redbox::Category.find('046').name, label: Spree.t(:category), label_html: {style: 'float: left;'}, input_html: { class: 'select2', style: 'padding-left: 5px; padding-bottom: 10px; width: 85%; float: left;' }, required: false %>
+    <%= f.submit 'Filtruj', style: 'float: right;' %>
+<% end %>
+<div style="clear: both;">
+    <%= paginate @products %>
+</div>
 <table>
   <tr>
     <th><%= Spree.t(:image) %></th>
-    <th><%= Spree.t(:sku) %></th>
-    <th><%= Spree.t(:name) %></th>
+    <th style="width: 30%;"><%= Spree.t(:name) %></th>
     <th><%= Spree.t(:attributes) %></th>
   </tr>
-  <%= simple_form_for :category, method: :get, url: url_for(action: 'index', controller: 'redbox_products') do |f| %>
-      <%= f.input :id, collection: @categories.map {|k,v| [v,k]}, label: Spree.t(:category), label_html: {style: 'float: left;'}, input_html: { class: 'select2', style: 'padding-left: 5px; padding-bottom: 10px; width: 85%; float: left;' }, required: false %>
-      <%= f.submit 'Filtruj', style: 'float: right;' %>
-  <% end %>
-  <%= simple_form_for update_multiple_admin_redbox_products_path, method: :put, url: url_for(action: 'update_multiple', controller: 'redbox_products') do %>
+  <%= simple_form_for :update_multiple, method: :put, url: url_for(action: 'update_multiple', controller: 'redbox_products') do |form|%>
+      <%= form.input :page, as: :hidden, input_html: { value: @page }  %>
+      <%= form.input 'category[id]', as: :hidden, input_html: { value: @category_id }  %>
       <% @products.each do |product| %>
           <%= simple_fields_for "products[]", product do |f| %>
               <span style="position: fixed; bottom: 0; left: 40%;"><%= f.submit Spree.t(:update) %></span>
               <tr>
                 <td>
-                  <a href="<%= product.images_links('redbox', 0)[0] %>" target="_blank"><%= image_tag(product.images_links('redbox', 1)[0]) %></a>
+                  <a href="<%= product.images_links('redbox', 0)[0] %>" target="_blank"><%= image_tag(product.images_links('redbox', 2)[0]) %></a>
                 </td>
                 <td>
-                  <%= product.symbol %>
-                </td>
-                <td>
+                  <p><%= product.symbol %></p>
+                  <br />
                   <p><a href="http://www.red-box.pl/shop,show,<%= product.product_id %>" target="_blank"><%= product.name_storage %></a></p>
                   <br />
                   <p><%= f.check_box :only_courier %> <%= f.label :only_courier, Spree.t(:only_courier) %></p>
                   <p><%= f.check_box :light_package %> <%= f.label :light_package, Spree.t(:light_package) %></p>
                 </td>
                 <td>
-                  <%= f.association :colors, collection: @colors, label: Spree.t(:colors), input_html: { class: 'select2', style: 'width: 370px; text-align: right;' }, label_html: { style: 'display: block; float: right;' } %>
-                  <%= f.association :ocassions, collection: @ocassions, label: Spree.t(:ocassions), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
-                  <%= f.association :styles, collection: @styles, label: Spree.t(:styles), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
-                  <%= f.association :sizes, collection: @sizes, label: Spree.t(:sizes), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
-                  <%= f.association :genders, collection: @genders, label: Spree.t(:genders), input_html: { class: 'select2', style: 'width: 370px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :colors, collection: @colors, label: Spree.t(:colors), input_html: { class: 'select2', style: 'width: 350px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :ocassions, collection: @ocassions, label: Spree.t(:ocassions), input_html: { class: 'select2', style: 'width: 350px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :styles, collection: @styles, label: Spree.t(:styles), input_html: { class: 'select2', style: 'width: 350px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :sizes, collection: @sizes, label: Spree.t(:sizes), input_html: { class: 'select2', style: 'width: 350px;' }, label_html: { style: 'display: block; float: right;' } %>
+                  <%= f.association :genders, collection: @genders, label: Spree.t(:genders), input_html: { class: 'select2', style: 'width: 350px;' }, label_html: { style: 'display: block; float: right;' } %>
                 </td>
               </tr>
           <% end %>
