@@ -54,7 +54,7 @@ class Redbox::Category < ActiveRecord::Base
   def self.all_names(start_node = new)
     names = {}
     start_node.children(true).each { |category| names[category.id] = category.full_path }
-    names
+    names.sort
   end
 
   def number_chunks
