@@ -6,7 +6,7 @@ module Spree
         get_data
         @category_id = form_params[:id]
         @custom = []
-        if params[:q].has_key?(:custom)
+        if params.has_key?(:q) and params[:q].has_key?(:custom)
           @custom = params[:q][:custom]
         end
         @q = Redbox::Product.search(params[:q])
