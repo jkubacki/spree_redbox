@@ -1,0 +1,39 @@
+<%= search_form_for @q, url: admin_redbox_products_path do |f| %>
+
+  <%= f.label 'Nazwa magazynowa' %>
+  <%= f.search_field :name_storage_cont %>
+  <%= f.label 'Index' %>
+  <%= f.search_field :index_eq %>
+  <%= f.label 'Symbol' %>
+  <%= f.search_field :symbol_eq %>
+  <%= f.label 'Jednostka' %>
+  <%= f.collection_select :unit_id_in, @units, :id, :name, include_blank: true %>
+  <%= f.label 'Producent' %>
+  <%= f.collection_select :producer_id_in, @producers, :id, :name, include_blank: true %>
+  <%= f.label 'Kolor' %>
+  <%= f.collection_select :colors_id_in, @colors, :id, :name, include_blank: true %>
+  <%= f.label 'Styl' %>
+  <%= f.collection_select :styles_id_in, @styles, :id, :name, include_blank: true %>
+  <%= f.label 'Rozmiar' %>
+  <%= f.collection_select :sizes_id_in, @sizes, :id, :name, include_blank: true %>
+  <%= f.label 'Płeć' %>
+  <%= f.collection_select :genders_id_in, @genders, :id, :name, include_blank: true %><br />
+  <%= f.label 'Okazja' %>
+  <%= f.collection_select :ocassions_id_in, @ocassions, :id, :name, include_blank: true %>
+  <%= f.label 'Widoczny' %>
+  <%= f.search_field :visible_eq %>
+  <%= f.label 'Bez koloru' %>
+  <input type="checkbox" id="q_custom_without_colors" name="q[custom][without_colors]" type="search" <% if @custom.include?(:without_colors) %>checked="checked"<% end %>>
+  <%= f.label 'Bez stylu' %>
+  <input type="checkbox" id="q_custom_without_styles" name="q[custom][without_styles]" type="search" <% if @custom.include?(:without_styles) %>checked="checked"<% end %>>
+  <%= f.label 'Bez rozmiaru' %>
+  <input type="checkbox" id="q_custom_without_sizes" name="q[custom][without_sizes]" type="search" <% if @custom.include?(:without_sizes) %>checked="checked"<% end %>>
+  <%= f.label 'Bez płci' %>
+  <input type="checkbox" id="q_custom_without_genders" name="q[custom][without_genders]" type="search" <% if @custom.include?(:without_genders) %>checked="checked"<% end %>>
+  <%= f.label 'Bez okazji' %>
+  <input type="checkbox" id="q_custom_without_ocassions" name="q[custom][without_ocassions]" type="search" <% if @custom.include?(:without_ocassions) %>checked="checked"<% end %>>
+  <%= f.label 'Bez niczego' %>
+  <input type="checkbox" id="q_custom_without_taxons" name="q[custom][without_taxons]" type="search" <% if @custom.include?(:without_taxons) %>checked="checked"<% end %>>
+  <%= f.submit "OK" %>
+
+<% end %>

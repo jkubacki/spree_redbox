@@ -2,6 +2,7 @@
     <%= f.input :id, collection: @categories.map {|k,v| [v,k]}, selected: @category_id, include_blank: Redbox::Category.find('046').name, label: Spree.t(:category), label_html: {style: 'float: left;'}, input_html: { class: 'select2', style: 'padding-left: 5px; padding-bottom: 10px; width: 85%; float: left;' }, required: false %>
     <%= f.submit 'Filtruj', style: 'float: right;' %>
 <% end %>
+<%= render 'search_form'%>
 <div style="clear: both;">
     <%= paginate @products %>
 </div>

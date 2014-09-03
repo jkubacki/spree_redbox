@@ -2,6 +2,9 @@ class Redbox::Product < ActiveRecord::Base
   establish_connection 'redbox'
   self.table_name = 'shop_product'
 
+  belongs_to :unit, foreign_key: :unit
+  belongs_to :producer
+
   has_and_belongs_to_many :ocassions, class_name: 'Redbox::Ocassion'
   has_and_belongs_to_many :colors, class_name: 'Redbox::Color'
   has_and_belongs_to_many :styles, class_name: 'Redbox::Style'
@@ -36,6 +39,12 @@ class Redbox::Product < ActiveRecord::Base
   scope :with_variants, -> { where("`symbol` LIKE '#%\\^%'") }
   scope :without_variants, -> { where("`symbol` NOT LIKE '#%\\^%'") }
   scope :visible, -> { where(visible: 1) }
+  scope :without_colors, -> { where('shop_product.product_id NOT IN (SELECT `product_id` FROM `shop_colors_product` WHERE `product_id` = shop_product.product_id)') }
+  scope :without_ocassions, -> { where('shop_product.product_id NOT IN (SELECT `product_id` FROM `shop_ocassions_product` WHERE `product_id` = shop_product.product_id)') }
+  scope :without_sizes, -> { where('shop_product.product_id NOT IN (SELECT `product_id` FROM `shop_product_sizes` WHERE `product_id` = shop_product.product_id)') }
+  scope :without_styles, -> { where('shop_product.product_id NOT IN (SELECT `product_id` FROM `shop_product_styles` WHERE `product_id` = shop_product.product_id)') }
+  scope :without_genders, -> { where('shop_product.product_id NOT IN (SELECT `product_id` FROM `shop_genders_product` WHERE `product_id` = shop_product.product_id)') }
+  scope :without_taxons, -> { without_colors.without_ocassions.without_sizes.without_styles.without_genders }
 
   def self.within_category(id)
     where("category_id LIKE :id OR category_id2 LIKE :id OR category_id3 LIKE :id", {id: id.to_s + '%'})

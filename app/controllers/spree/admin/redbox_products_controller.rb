@@ -5,12 +5,37 @@ module Spree
       def index
         get_data
         @category_id = form_params[:id]
-        @products = Redbox::Product
+        @custom = []
+        if params[:q].has_key?(:custom)
+          @custom = params[:q][:custom]
+        end
+        @q = Redbox::Product.search(params[:q])
+        query = "@products = @q.result(distinct: true)
           .within_category(@category_id)
           .with_hash.page(params[:page])
           .per(10).includes(:colors, :ocassions, :styles, :genders, :sizes)
-          .select(:product_id, :name_storage, :image, :symbol, :only_courier, :light_package, :visible)
-          .order(visible: :desc, symbol: :asc)
+          .select('shop_product.product_id', :name_storage, :image, :symbol, :only_courier, :light_package, :visible)
+          .order(visible: :desc, symbol: :asc)"
+        if @custom.include?(:without_taxons)
+          query += ".without_taxons"
+        else
+          if @custom.include?(:without_colors)
+            query += ".without_colors"
+          end
+          if @custom.include?(:without_ocassions)
+            query += ".without_ocassions"
+          end
+          if @custom.include?(:without_sizes)
+            query += ".without_sizes"
+          end
+          if @custom.include?(:without_styles)
+            query += ".without_styles"
+          end
+          if @custom.include?(:without_genders)
+            query += ".without_genders"
+          end
+        end
+        eval query
         @page = params[:page] || 1
       end
 
@@ -42,6 +67,8 @@ module Spree
       end
 
       def get_data
+        @units = Redbox::Unit.all
+        @producers = Redbox::Producer.all
         @colors = Redbox::Color.order('name ASC')
         @ocassions = Redbox::Ocassion.all
         @styles = Redbox::Style.all
