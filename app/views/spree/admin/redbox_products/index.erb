@@ -12,7 +12,7 @@
     <th style="width: 30%;"><%= Spree.t(:name) %></th>
     <th><%= Spree.t(:attributes) %></th>
   </tr>
-  <%= simple_form_for :update_multiple, method: :put, url: url_for(action: 'update_multiple', controller: 'redbox_products') do |form|%>
+  <%= simple_form_for :update_multiple, method: :put, url: url_for(action: 'update_multiple', controller: 'redbox_products'), remote: true do |form|%>
       <%= form.input :page, as: :hidden, input_html: { value: @page }  %>
       <%= form.input 'category[id]', as: :hidden, input_html: { value: @category_id }  %>
       <% @products.each do |product| %>

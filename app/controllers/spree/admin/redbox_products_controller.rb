@@ -45,7 +45,8 @@ module Spree
         end
         category_id = update_multiple_params[:category][:id]
         page = update_multiple_params[:page].to_i + 1
-        redirect_to admin_redbox_products_path(category: {id: category_id}, page: page)
+        render nothing: true
+        # redirect_to admin_redbox_products_path(category: {id: category_id}, page: page)
       end
 
       private
